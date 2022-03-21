@@ -114,18 +114,18 @@ if __name__ == '__main__':
         # Cek Pakan
         date_now = datetime.datetime.now()
         print("cek controling ", date_now)
-        con.execute("SELECT `interval`, HOUR(TIME), `status` FROM `c_jadwal`")
+        con.execute("SELECT `durasi`, HOUR(TIME), `status` FROM `c_jadwal`")
         pakan_dict = {}
-        for interval, jam, status in con.fetchall():
+        for durasi, jam, status in con.fetchall():
             # print(durasi, jam, status)
-            pakan_dict[status] = jam, interval
+            pakan_dict[status] = jam, durasi
         for status in pakan_dict:
-            jam, interval = pakan_dict[status]
+            jam, durasi = pakan_dict[status]
             if status == 'next run' and str(jam) == hour_now():
                 # update dari next run ke runing
                 con.execute(f"UPDATE c_jadwal SET `status` = 'runing', updated_at = '{date_now}' "
                            f"WHERE `status` = 'next run'")
-                pakan(interval)
+                pakan(durasi)
                 # update dari waiting ke next run
                 con.execute(f"UPDATE c_jadwal SET `status` = 'next run', updated_at = '{date_now}' "
                            f"WHERE `status` = 'waiting'")
@@ -148,7 +148,7 @@ if __name__ == '__main__':
                     sirkulasi()
             else:
                 print("No Action Needed")
-        t = 360
+        t = 3600
         while t:
             mins, secs = divmod(t, 60)
             sys.stdout.write(f"\rWaiting for next action {mins:02d}:{secs:02d}")
